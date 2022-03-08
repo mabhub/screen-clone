@@ -2,9 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/src/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite App</title>
+    <title>Screen clone</title>
     <style>
       *, ::before, ::after {
         box-sizing: inherit;
@@ -15,21 +14,42 @@
         margin: 0;
         padding: 0;
       }
+
       body {
         display: flex;
         justify-content: stretch;
         align-items: stretch;
       }
-      #root {
-        flex: 1 1 100%;
-        display: flex;
-        justify-content: stretch;
-        align-items: stretch;
+
+      #video {
+        width: 100%;
+        background: #ddd;
       }
     </style>
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+    <video autoPlay id="video"></video>
+
+    <script type="module">
+      const video = document.querySelector('#video');
+
+      video.onclick = async () => {
+        if (video.srcObject) {
+          const tracks = video.srcObject.getTracks();
+          tracks.forEach(track => track.stop());
+          video.srcObject = null;
+        } else {
+          try {
+            video.srcObject = await navigator.mediaDevices.getDisplayMedia({
+              video: { cursor: 'always' },
+              audio: false,
+            });
+          } catch (error) {
+            // eslint-disable-next-line no-console
+            console.log(error);
+          }
+        }
+      };
+    </script>
   </body>
 </html>
