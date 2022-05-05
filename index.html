@@ -45,20 +45,27 @@
     <script type="module">
       const video = document.querySelector('#video');
 
+      const stop = () => {
+        const tracks = video.srcObject.getTracks();
+        tracks.forEach(track => track.stop());
+        video.srcObject = null;
+      };
+
+      const play = async () => {
+        try {
+          video.srcObject = await navigator.mediaDevices.getDisplayMedia({
+            video: { cursor: 'always' },
+            audio: false,
+          });
+          video.style.cursor = 'not-allowed';
+        } catch (error) {
+          console.log(error);
+        }
+      };
+
       video.onclick = async () => {
-        if (video.srcObject) {
-          const tracks = video.srcObject.getTracks();
-          tracks.forEach(track => track.stop());
-          video.srcObject = null;
-        } else {
-          try {
-            video.srcObject = await navigator.mediaDevices.getDisplayMedia({
-              video: { cursor: 'always' },
-              audio: false,
-            });
-          } catch (error) {
-            console.log(error);
-          }
+        if (!video.srcObject) {
+          play();
         }
       };
     </script>
